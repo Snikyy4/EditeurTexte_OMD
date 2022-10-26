@@ -3,6 +3,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.awt.Color;
@@ -14,12 +16,11 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
     private JPanel fenetre;
     private JPanel buttonBar;
 
+
     private JButton copierB;
     private JButton couperB;
     private JButton collerB;
     private JButton selectB;
-    private JButton gaucheB;
-    private JButton droiteB;
 
     private Copier copier = new Copier();
     private Couper couper = new Couper();
@@ -36,7 +37,7 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
         // Fermeture de la fenêtre
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Largeur et hauteur de la fenêtre
-        this.setPreferredSize(new Dimension(1100, 600));
+        this.setPreferredSize(new Dimension(1000, 600));
 
         // Initialisation du buffer
         buffer = new Buffer();
@@ -50,20 +51,17 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
         couperB = new JButton("Couper");
         collerB = new JButton("Coller");
         selectB = new JButton("Select");
-        gaucheB = new JButton("<--");
-        droiteB = new JButton("-->");
 
-        buttonBar.setBackground(Color.BLUE);
-        zoneTexte.setBounds(0, 0, 300, 200);
+        buttonBar.setBackground(Color.BLACK);
+        zoneTexte.setBounds(0, 0, 100, 100);
         zoneTexte.setVerticalAlignment(JLabel.TOP);
+    
 
         // Ajoute aux boutons le fait de pouvoir faire une action
         copierB.addActionListener(this);
         couperB.addActionListener(this);
         collerB.addActionListener(this);
         selectB.addActionListener(this);
-        gaucheB.addActionListener(this);
-        droiteB.addActionListener(this);
 
         fenetre.setLayout(new BorderLayout());
         fenetre.add(buttonBar, BorderLayout.NORTH);
@@ -74,10 +72,7 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
         buttonBar.add(couperB);
         buttonBar.add(collerB);
         buttonBar.add(selectB);
-        buttonBar.add(gaucheB);
-        buttonBar.add(droiteB);
-        this.add(fenetre); // Ajout de la bar dans la fenêtre
-
+        this.add(fenetre); 
         this.setFocusable(true);
 
         // Ajout du KeyListener à l'interface
@@ -101,12 +96,6 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
             case "Select":
                 select.execute();
                 break;
-            case "<--":
-                gauche.execute();
-                break;
-            case "-->":
-                droite.execute();
-                break;
         }
 
         // Prend le focus de l'interface et update l'interface
@@ -118,12 +107,14 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
     // Fonction permettant de faire des actions en fonction de la touche pressée par l'utilisateur
     @Override
     public void keyTyped(KeyEvent t) {
-        
         if ((int) (t.getKeyChar()) == 8) { // Si la touche pressé est le backspace, lancer la commande back
             back.execute();
-        } else if ((int) (t.getKeyChar()) == 10) { // Si la touche pressée est entrée, alors ajoute d'un retour chariot
+        } 
+        else if ((int) (t.getKeyChar()) == 10) { // Si la touche pressée est entrée, alors ajoute d'un retour chariot
             buffer.write('\n');
-        } else { // Sinon, ajoute le caractère pressé
+        } 
+        //else if ((int) (t.getKeyChar()))
+        else { // Sinon, ajoute le caractère pressé
             buffer.write(t.getKeyChar());
         }
         //Update de l'interface
@@ -132,8 +123,14 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
 
     // Methode non utilisée, pas d'implementation
     @Override
-    public void keyPressed(KeyEvent e) {
-        
+    public void keyPressed(KeyEvent t) {
+        if ((int) t.getKeyCode()==37){
+            gauche.execute();
+        }
+        else if ((int) t.getKeyCode()==39){
+            droite.execute();
+        }
+        this.update();
     }
     // Methode non utilisée, pas d'implementation
     @Override
@@ -155,10 +152,10 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
             if (cursorPosition == selectPosition) { // Cas 1: la selection est vide
                 texteFinal = text.substring(0, selectPosition) + '|' + text.substring(cursorPosition);
             } else if (cursorPosition > selectPosition) { // Cas 2 : selection effectuée de la gauche vers la droite
-                texteFinal = text.substring(0, selectPosition) + "<span bgcolor=\"#1e90ff\">"
+                texteFinal = text.substring(0, selectPosition) + "<span bgcolor=\"#87CEFA\">"
                         + text.substring(selectPosition, cursorPosition) + "</span>|" + text.substring(cursorPosition);
             } else { // Cas 3 : selection effectuée de la droite vers la gauche
-                texteFinal = text.substring(0, cursorPosition) + "|<span bgcolor=\"#1e90ff\">"
+                texteFinal = text.substring(0, cursorPosition) + "|<span bgcolor=\"#87CEFA\">"
                         + text.substring(cursorPosition, selectPosition) + "</span>" + text.substring(selectPosition);
             }
         } else { // sinon se contente d'afficher le curseur
