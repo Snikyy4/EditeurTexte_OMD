@@ -14,7 +14,6 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
     private JLabel zoneTexte;
     private JPanel fenetre;
     private JPanel buttonBar;
-    private int test;
     private JLabel nbMotsBar; // Ajout du nombre de caractères sur la barre d'affichage
     private String nbMotsFichier; // String contenant le nb de caractères du fichier
 
@@ -22,6 +21,9 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
     private JButton couperB;
     private JButton collerB;
     private JButton selectB;
+    private JButton precedentB;
+    private JButton suivantB;
+
 
     private Copier copier = new Copier();
     private Couper couper = new Couper();
@@ -30,6 +32,8 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
     private Back back = new Back();
     private Gauche gauche = new Gauche();
     private Droite droite = new Droite();
+    private Precedent precedent = new Precedent();
+    private Suivant suivant = new Suivant();
 
     // Constrcuteur de l'interface
     public Interface() {
@@ -42,6 +46,7 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
 
         // Initialisation du buffer
         buffer = new Buffer();
+        buffer.etatInit();
         
         // initialisation des éléments de l'UI
         zoneTexte = new JLabel("|");
@@ -51,6 +56,8 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
         couperB = new JButton("Couper");
         collerB = new JButton("Coller");
         selectB = new JButton("Selection");
+        precedentB = new JButton("↩");
+        suivantB = new JButton("↪");
 
         nbMotsFichier = String.valueOf("0");
         nbMotsBar = new JLabel(nbMotsFichier+ " caractère"); //Initialisation à 0 caractère
@@ -66,6 +73,8 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
         couperB.addActionListener(this);
         collerB.addActionListener(this);
         selectB.addActionListener(this);
+        precedentB.addActionListener(this);
+        suivantB.addActionListener(this);
 
         fenetre.setLayout(new BorderLayout());
         fenetre.add(buttonBar, BorderLayout.NORTH);
@@ -76,6 +85,8 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
         buttonBar.add(couperB);
         buttonBar.add(collerB);
         buttonBar.add(selectB);
+        buttonBar.add(precedentB);
+        buttonBar.add(suivantB);
         buttonBar.add(nbMotsBar);
         this.add(fenetre); 
         this.setFocusable(true);
@@ -94,18 +105,26 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
                 break;
             case "Couper":
                 couper.execute();
-                
                 nbMotsFichier = String.valueOf(buffer.getTexte().length());
                 nbMotsBar.setText(nbMotsFichier+" caractères");
                 break;
             case "Coller":
                 coller.execute();
-                
                 nbMotsFichier = String.valueOf(buffer.getTexte().length());
                 nbMotsBar.setText(nbMotsFichier+" caractères");
                 break;
             case "Selection":
                 selection.execute();
+                break;
+            case "↩":
+                precedent.execute();
+                nbMotsFichier = String.valueOf(buffer.getTexte().length());
+                nbMotsBar.setText(nbMotsFichier+" caractères");
+                break;
+            case "↪":
+                suivant.execute();
+                nbMotsFichier = String.valueOf(buffer.getTexte().length());
+                nbMotsBar.setText(nbMotsFichier+" caractères");
                 break;
         }
 

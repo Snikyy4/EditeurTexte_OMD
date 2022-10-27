@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Buffer {
@@ -8,6 +9,9 @@ public class Buffer {
     private static int posSelect = -1;
     private static String texteTmp = "";
     private static String texte = "";
+    private static ArrayList<String> EtatTexte = new ArrayList<String>();
+    private static ArrayList<Integer> EtatCurseur = new ArrayList<Integer>();
+    private static int EtatIndex = 0;
 
     // Accesseurs
     public String getTexte() {
@@ -48,6 +52,7 @@ public class Buffer {
         }
         // Supprime la selection
         supprSelection();
+        ajouteEtat(Buffer.texte, Buffer.posCurseur);
     }
 
     // Colle la portion de texte contenue dans texteTmp au niveau du curseur ou a la place de la selection
@@ -57,6 +62,7 @@ public class Buffer {
         }
         Buffer.texte = Buffer.texte.substring(0, Buffer.posCurseur) + texteTmp + Buffer.texte.substring(Buffer.posCurseur);
         Buffer.posCurseur += texteTmp.length();
+        ajouteEtat(Buffer.texte, Buffer.posCurseur);
     }
 
      //Place le curseur de selection 
@@ -102,10 +108,12 @@ public class Buffer {
         // Cas où il y a une selection
         if (Buffer.posSelect != -1) {
             supprSelection();
+            ajouteEtat(Buffer.texte, Buffer.posCurseur);
         } else { // Cas où il n'y a pas de selection
             if (Buffer.posCurseur > 0) {
                 Buffer.texte = Buffer.texte.substring(0, Buffer.posCurseur - 1) + Buffer.texte.substring(Buffer.posCurseur);
                 Buffer.posCurseur--;
+                ajouteEtat(Buffer.texte, Buffer.posCurseur);
             }
         }
 
@@ -119,5 +127,44 @@ public class Buffer {
         }
         Buffer.texte = Buffer.texte + c;
         posCurseur++;
+        ajouteEtat(Buffer.texte, Buffer.posCurseur);
     }
+
+    public void etatInit(){
+        Buffer.EtatTexte.add("");
+        Buffer.EtatCurseur.add(0);
+        Buffer.EtatIndex++;
+    }
+
+    // Revenir a l'état précédent, correspond au controle Z
+    public void etatPrecedent() {
+        Buffer.posSelect = -1;
+        if (Buffer.EtatIndex > 0) {
+            Buffer.EtatIndex--;
+        }
+        Buffer.texte = Buffer.EtatTexte.get(Buffer.EtatIndex); // Récupère le texte de l'indexe précédent
+        Buffer.posCurseur = Buffer.EtatCurseur.get(Buffer.EtatIndex); // Positionne le curseur à l'endroit du curseur de l'état précédent
+    }
+
+    // Retourner à l'état suivant
+    public void etatSuivant() {
+        Buffer.posSelect = -1;
+        if (Buffer.EtatIndex < Buffer.EtatTexte.size() - 1) {
+            Buffer.EtatIndex++;
+        }
+        Buffer.texte = Buffer.EtatTexte.get(Buffer.EtatIndex); // Récupère le texte de l'index précédent
+        Buffer.posCurseur = Buffer.EtatCurseur.get(Buffer.EtatIndex); // Positionne le curseur à l'endroit du curseur de l'état précédent
+    }
+
+    public void ajouteEtat(String texte, int posCurseur) {
+        // Mets a jour la liste des états
+        if (Buffer.EtatIndex < Buffer.EtatTexte.size() - 1) {
+            Buffer.EtatTexte.subList(Buffer.EtatIndex, Buffer.EtatTexte.size() - 1).clear();
+            Buffer.EtatCurseur.subList(Buffer.EtatIndex, Buffer.EtatCurseur.size() - 1).clear();
+        }
+        Buffer.EtatTexte.add(texte);
+        Buffer.EtatCurseur.add(posCurseur);
+        Buffer.EtatIndex++;
+    }
+
 }
