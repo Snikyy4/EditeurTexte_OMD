@@ -14,7 +14,7 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
     private JLabel zoneTexte;
     private JPanel fenetre;
     private JPanel buttonBar;
-
+    private int test;
     private JLabel nbMotsBar; // Ajout du nombre de caractères sur la barre d'affichage
     private String nbMotsFichier; // String contenant le nb de caractères du fichier
 
