@@ -2,11 +2,11 @@
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        // création de l'interface homme machine 
+        //Créé l'interface
         Interface textEditor = new Interface();
-        // initialise les composants à leur prefered size
+        //Initialise l'interface
         textEditor.pack();
-        // rendre la fenêtre visible
+        //Rend la fenêtre visible
         textEditor.setVisible(true);
     }
 }
