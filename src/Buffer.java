@@ -8,15 +8,6 @@ public class Buffer {
     private static int posSelect = -1;
     private static String texteTmp = "";
     private static String texte = "";
-    private static LinkedList<String> EtatTexte = new LinkedList<String>();
-    private static LinkedList<Integer> EtatCurseur = new LinkedList<Integer>();
-    private static int EtatIndex = 0;
-
-    public void init(){
-        Buffer.EtatTexte.add("");
-        Buffer.EtatCurseur.add(0);
-        Buffer.EtatIndex++;
-    }
 
     // Accesseurs
     public String getTexte() {
@@ -41,13 +32,12 @@ public class Buffer {
                 Buffer.texteTmp = Buffer.texte.substring(Buffer.posCurseur, Buffer.posSelect);
             }
         }
-
         // Annule la selection
         Buffer.posSelect = -1;
     }
 
     //Coupe la portion de texte sélectionnée dans le texteTmp entre le curseur courant et le curseur de la séléction
-    public int couper() {
+    public void couper() {
         // Verifie qu'il y a bien une sélection et que les curseurs sont dans le texte
         if (Buffer.posSelect >= 0 && Buffer.posSelect != Buffer.posCurseur && Buffer.posCurseur <= Buffer.texte.length() && Buffer.posSelect <= Buffer.texte.length()) {
             if (Buffer.posSelect < Buffer.posCurseur) {// Cas où la selection est effectuée de la gauche vers la droite
@@ -58,21 +48,15 @@ public class Buffer {
         }
         // Supprime la selection
         supprSelection();
-        ajouteEtat(Buffer.texte, Buffer.posCurseur);
-
-        return texteTmp.length(); // Pour l'affichage de caractères
     }
 
     // Colle la portion de texte contenue dans texteTmp au niveau du curseur ou a la place de la selection
-    public int coller() {
+    public void coller() {
         if (Buffer.posSelect != -1) {
             supprSelection();
         }
         Buffer.texte = Buffer.texte.substring(0, Buffer.posCurseur) + texteTmp + Buffer.texte.substring(Buffer.posCurseur);
         Buffer.posCurseur += texteTmp.length();
-        ajouteEtat(Buffer.texte, Buffer.posCurseur);
-
-        return texteTmp.length(); // Pour l'affichage de caractères
     }
 
      //Place le curseur de selection 
@@ -118,13 +102,10 @@ public class Buffer {
         // Cas où il y a une selection
         if (Buffer.posSelect != -1) {
             supprSelection();
-            ajouteEtat(Buffer.texte, Buffer.posCurseur);
         } else { // Cas où il n'y a pas de selection
             if (Buffer.posCurseur > 0) {
                 Buffer.texte = Buffer.texte.substring(0, Buffer.posCurseur - 1) + Buffer.texte.substring(Buffer.posCurseur);
                 Buffer.posCurseur--;
-
-                ajouteEtat(Buffer.texte, Buffer.posCurseur);
             }
         }
 
@@ -138,20 +119,5 @@ public class Buffer {
         }
         Buffer.texte = Buffer.texte + c;
         posCurseur++;
-
-        ajouteEtat(Buffer.texte, Buffer.posCurseur);
     }
-
-    public void ajouteEtat(String texte, int posCurseur) {
-        // Mets a jour la liste des états
-        if (Buffer.EtatIndex < Buffer.EtatTexte.size() - 1) {
-            Buffer.EtatTexte.subList(Buffer.EtatIndex, Buffer.EtatTexte.size() - 1).clear();
-            Buffer.EtatCurseur.subList(Buffer.EtatIndex, Buffer.EtatCurseur.size() - 1).clear();
-        }
-
-        Buffer.EtatTexte.add(texte);
-        Buffer.EtatCurseur.add(posCurseur);
-        Buffer.EtatIndex++;
-    }
-
 }

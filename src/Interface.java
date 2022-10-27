@@ -44,8 +44,7 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
 
         // Initialisation du buffer
         buffer = new Buffer();
-        buffer.init();
-
+        
         // initialisation des éléments de l'UI
         zoneTexte = new JLabel("|");
         buttonBar = new JPanel();
@@ -54,8 +53,8 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
         couperB = new JButton("Couper");
         collerB = new JButton("Coller");
         selectB = new JButton("Selection");
-        
-        nbMotsFichier = "0";
+
+        nbMotsFichier = String.valueOf("0");
         nbMotsBar = new JLabel(nbMotsFichier+ " caractère"); //Initialisation à 0 caractère
         nbMotsBar.setForeground(Color.WHITE);
 
@@ -97,12 +96,14 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
                 break;
             case "Couper":
                 couper.execute();
-                nbMotsFichier = String.valueOf(Integer.parseInt(nbMotsFichier)-buffer.couper()); // Enlève le nb de caractères coupés
+                
+                nbMotsFichier = String.valueOf(buffer.getTexte().length());
                 nbMotsBar.setText(nbMotsFichier+" caractères");
                 break;
             case "Coller":
                 coller.execute();
-                nbMotsFichier = String.valueOf(Integer.parseInt(nbMotsFichier)+buffer.coller()); //Ajout le nb de caractères collés
+                
+                nbMotsFichier = String.valueOf(buffer.getTexte().length());
                 nbMotsBar.setText(nbMotsFichier+" caractères");
                 break;
             case "Selection":
@@ -120,8 +121,8 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
     @Override
     public void keyTyped(KeyEvent t) {
         if ((int) (t.getKeyChar()) == 8) { // Si la touche pressé est le backspace, lancer la commande back
-            back.execute();
-            nbMotsFichier = String.valueOf(Integer.parseInt(nbMotsFichier)-1); // Supprime 1 caractère de l'affichage dans le cas du backspace
+            back.execute(); // Supprime 1 caractère de l'affichage dans le cas du backspace
+            nbMotsFichier = String.valueOf(buffer.getTexte().length());
             nbMotsBar.setText(nbMotsFichier+" caractères");
         } 
         else if ((int) (t.getKeyChar()) == 10) { // Si la touche pressée est entrée, alors ajoute d'un retour chariot
@@ -129,7 +130,7 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
         }
         else { // Sinon, ajoute le caractère tapé
             buffer.write(t.getKeyChar());
-            nbMotsFichier = String.valueOf(Integer.parseInt(nbMotsFichier)+1); // Ajoute 1 caractère de l'affichage dans le cas de l'écriture 
+            nbMotsFichier = String.valueOf(buffer.getTexte().length());
             nbMotsBar.setText(nbMotsFichier+" caractères");
         }
         this.update(); //Update de l'interface
