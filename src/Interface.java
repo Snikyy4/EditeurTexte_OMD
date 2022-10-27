@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import java.awt.Dimension;
 import java.awt.event.*;
@@ -16,6 +17,8 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
     private JPanel fenetre;
     private JPanel buttonBar;
 
+    private JLabel nbMotsBar; // Ajout du nombre de caractères sur la barre d'affichage
+    private String nbMotsFichier; // String contenant le nb de caractères du fichier
 
     private JButton copierB;
     private JButton couperB;
@@ -25,12 +28,12 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
     private Copier copier = new Copier();
     private Couper couper = new Couper();
     private Coller coller = new Coller();
-    private Select select = new Select();
+    private Selection selection = new Selection();
     private Back back = new Back();
     private Gauche gauche = new Gauche();
     private Droite droite = new Droite();
 
-
+    // Constrcuteur de l'interface
     public Interface() {
         // Ajout du titre de la fenêtre
         this.setTitle("Editeur de texte Lequertier-Potin");
@@ -50,7 +53,11 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
         copierB = new JButton("Copier");
         couperB = new JButton("Couper");
         collerB = new JButton("Coller");
-        selectB = new JButton("Select");
+        selectB = new JButton("Selection");
+        
+        nbMotsFichier = "0";
+        nbMotsBar = new JLabel(nbMotsFichier+ " caractère"); //Initialisation à 0 caractère
+        nbMotsBar.setForeground(Color.WHITE);
 
         buttonBar.setBackground(Color.BLACK);
         zoneTexte.setBounds(0, 0, 100, 100);
@@ -72,6 +79,7 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
         buttonBar.add(couperB);
         buttonBar.add(collerB);
         buttonBar.add(selectB);
+        buttonBar.add(nbMotsBar);
         this.add(fenetre); 
         this.setFocusable(true);
 
@@ -89,12 +97,16 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
                 break;
             case "Couper":
                 couper.execute();
+                nbMotsFichier = String.valueOf(Integer.parseInt(nbMotsFichier)-buffer.couper()); // Enlève le nb de caractères coupés
+                nbMotsBar.setText(nbMotsFichier+" caractères");
                 break;
             case "Coller":
                 coller.execute();
+                nbMotsFichier = String.valueOf(Integer.parseInt(nbMotsFichier)+buffer.coller()); //Ajout le nb de caractères collés
+                nbMotsBar.setText(nbMotsFichier+" caractères");
                 break;
-            case "Select":
-                select.execute();
+            case "Selection":
+                selection.execute();
                 break;
         }
 
@@ -109,29 +121,32 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
     public void keyTyped(KeyEvent t) {
         if ((int) (t.getKeyChar()) == 8) { // Si la touche pressé est le backspace, lancer la commande back
             back.execute();
+            nbMotsFichier = String.valueOf(Integer.parseInt(nbMotsFichier)-1); // Supprime 1 caractère de l'affichage dans le cas du backspace
+            nbMotsBar.setText(nbMotsFichier+" caractères");
         } 
         else if ((int) (t.getKeyChar()) == 10) { // Si la touche pressée est entrée, alors ajoute d'un retour chariot
             buffer.write('\n');
-        } 
-        //else if ((int) (t.getKeyChar()))
-        else { // Sinon, ajoute le caractère pressé
-            buffer.write(t.getKeyChar());
         }
-        //Update de l'interface
-        this.update();
+        else { // Sinon, ajoute le caractère tapé
+            buffer.write(t.getKeyChar());
+            nbMotsFichier = String.valueOf(Integer.parseInt(nbMotsFichier)+1); // Ajoute 1 caractère de l'affichage dans le cas de l'écriture 
+            nbMotsBar.setText(nbMotsFichier+" caractères");
+        }
+        this.update(); //Update de l'interface
     }
 
     // Methode non utilisée, pas d'implementation
     @Override
     public void keyPressed(KeyEvent t) {
-        if ((int) t.getKeyCode()==37){
-            gauche.execute();
+        if ((int) t.getKeyCode()==37){ //Flèche de gauche sur le clavier
+            gauche.execute(); 
         }
-        else if ((int) t.getKeyCode()==39){
-            droite.execute();
+        else if ((int) t.getKeyCode()==39){ //Flèche de droite sur le clavier
+            droite.execute(); 
         }
         this.update();
     }
+
     // Methode non utilisée, pas d'implementation
     @Override
     public void keyReleased(KeyEvent e) {
@@ -141,30 +156,30 @@ public class Interface extends JFrame implements KeyListener, ActionListener {
     //Update de l'interface lorsqu'une commande est excecutée
     private void update() {
         String text = buffer.getTexte();
-        int cursorPosition = buffer.getPosCurseur();
-        int selectPosition = buffer.getPosSelect();
+        int posCurseur = buffer.getPosCurseur();
+        int posSelect = buffer.getPosSelect();
 
         String texteFinal; 
         
         // Adapte les texte avec des balises html et le curseur pour l'afficher
 
-        if (selectPosition != -1) { // Si il y a une selection, la surligne en bleu
-            if (cursorPosition == selectPosition) { // Cas 1: la selection est vide
-                texteFinal = text.substring(0, selectPosition) + '|' + text.substring(cursorPosition);
-            } else if (cursorPosition > selectPosition) { // Cas 2 : selection effectuée de la gauche vers la droite
-                texteFinal = text.substring(0, selectPosition) + "<span bgcolor=\"#87CEFA\">"
-                        + text.substring(selectPosition, cursorPosition) + "</span>|" + text.substring(cursorPosition);
-            } else { // Cas 3 : selection effectuée de la droite vers la gauche
-                texteFinal = text.substring(0, cursorPosition) + "|<span bgcolor=\"#87CEFA\">"
-                        + text.substring(cursorPosition, selectPosition) + "</span>" + text.substring(selectPosition);
+        if (posSelect != -1) { // Si il y a une selection, la surligne en bleu ciel
+            if (posCurseur == posSelect) { // Cas où la selection est vide
+                texteFinal = text.substring(0, posSelect) + '|' + text.substring(posCurseur);
+            } else if (posCurseur > posSelect) { // Cas où la selection est effectuée de la gauche vers la droite
+                texteFinal = text.substring(0, posSelect) + "<span bgcolor=\"#87CEFA\">"
+                        + text.substring(posSelect, posCurseur) + "</span>|" + text.substring(posCurseur);
+            } else { // Cas où selection est effectuée de la droite vers la gauche
+                texteFinal = text.substring(0, posCurseur) + "|<span bgcolor=\"#87CEFA\">"
+                        + text.substring(posCurseur, posSelect) + "</span>" + text.substring(posSelect);
             }
-        } else { // sinon se contente d'afficher le curseur
-            texteFinal = text.substring(0, cursorPosition) + '|' + text.substring(cursorPosition);
+        } else { // Sinon se contente d'afficher le curseur
+            texteFinal = text.substring(0, posCurseur) + '|' + text.substring(posCurseur);
         }
         // Ajout de la balise de debut et fin et convertit les retours chariot en html
         texteFinal = "<html>" + texteFinal.replace("\n", "<br>") + "</html>";
 
-        // Remplace le texte dans l'UI
+        // Remplace le texte dans l'interface
         this.zoneTexte.setText(texteFinal);
         zoneTexte.updateUI();
 

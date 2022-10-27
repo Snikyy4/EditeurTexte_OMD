@@ -1,6 +1,6 @@
-public class Select implements ICommand{
+public class Selection implements ICommand{
     public void execute(){
         Buffer buffer = new Buffer();
-        buffer.select();
+        buffer.selection();
     }
 }

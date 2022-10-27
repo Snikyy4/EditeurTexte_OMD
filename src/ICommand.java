@@ -1,6 +1,5 @@
 public interface ICommand { 
-    /*
-     * Permet d'appeler la méthode execute des classes
-     */
+    
+    //Permet d'appeler la méthode execute des classes 
     public void execute();
 }
